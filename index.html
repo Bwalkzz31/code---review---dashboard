@@ -1,88 +1,339 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Code Review Dashboard</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #f4f6f8;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code Review Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        h1 {
-            color: #333;
-        }
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent-dim: #1f3a5f;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --low: #3fb950;
+      --low-bg: #0d2a14;
+      --medium: #d29922;
+      --medium-bg: #2d1f00;
+      --high: #f85149;
+      --high-bg: #3a0d09;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
 
-        form {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      padding: 0;
+    }
 
-        textarea, input, select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        button {
-            background: #007bff;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    .logo-dot {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
 
-        button:hover {
-            background: #0056b3;
-        }
+    header h1 {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
 
-        .review {
-            background: white;
-            padding: 15px;
-            border-left: 5px solid #007bff;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-    </style>
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.75rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    textarea, input, select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+      appearance: none;
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    textarea:focus, input:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    textarea::placeholder, input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    button[type="submit"] {
+      background: var(--accent);
+      color: #0d1117;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-top: 0.5rem;
+    }
+
+    button[type="submit"]:hover { opacity: 0.85; }
+
+    .reviews-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .reviews-header h2 {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .count-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+
+    .review-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .severity-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    .severity-low { background: var(--low-bg); color: var(--low); border: 1px solid var(--low); }
+    .severity-medium { background: var(--medium-bg); color: var(--medium); border: 1px solid var(--medium); }
+    .severity-high { background: var(--high-bg); color: var(--high); border: 1px solid var(--high); }
+
+    .review-content p {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .review-content p span {
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .review-code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 10px;
+      margin-top: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: var(--text-muted);
+      max-height: 80px;
+      overflow-y: auto;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+
+    .empty-state .icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
 </head>
-
 <body>
 
-<h1>Code Review Dashboard</h1>
+<header>
+  <span class="logo-dot"></span>
+  <h1>code-review-dashboard</h1>
+  <span class="badge">v1.0 · Flask</span>
+</header>
 
-<form method="POST">
-    <textarea name="code" placeholder="Paste code here"></textarea>
+<div class="container">
 
-    <input type="text" name="issue" placeholder="Describe issue">
+  <div class="card">
+    <p class="section-label">// submit review</p>
+    <h2>New Code Review</h2>
+    <form method="POST">
+      <div class="form-group">
+        <label>CODE SNIPPET</label>
+        <textarea name="code" placeholder="Paste your code here..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ISSUE DESCRIPTION</label>
+          <input type="text" name="issue" placeholder="Describe the issue..." />
+        </div>
+        <div class="form-group">
+          <label>SEVERITY LEVEL</label>
+          <select name="severity">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>SUGGESTED FIX</label>
+        <input type="text" name="fix" placeholder="Suggest a fix..." />
+      </div>
+      <button type="submit">Submit Review →</button>
+    </form>
+  </div>
 
-    <label>Severity:</label>
-    <select name="severity">
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-    </select>
+  <div class="reviews-header">
+    <p class="section-label">// submitted reviews</p>
+    <span class="count-pill">{{ reviews|length }} total</span>
+  </div>
 
-    <input type="text" name="fix" placeholder="Suggested fix">
+  {% if reviews %}
+    {% for r in reviews %}
+    <div class="review-item">
+      <span class="severity-tag severity-{{ r.severity | lower }}">{{ r.severity }}</span>
+      <div class="review-content">
+        <p>Issue: <span>{{ r.issue }}</span></p>
+        <p>Fix: <span>{{ r.fix }}</span></p>
+        {% if r.code %}
+        <div class="review-code">{{ r.code }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="icon">◎</div>
+      <p>No reviews submitted yet.</p>
+    </div>
+  {% endif %}
 
-    <button type="submit">Submit Review</button>
-</form>
-
-<h2>Reviews</h2>
-
-{% for r in reviews %}
-<div class="review">
-    <p><strong>Issue:</strong> {{ r.issue }}</p>
-    <p><strong>Severity:</strong> {{ r.severity }}</p>
-    <p><strong>Fix:</strong> {{ r.fix }}</p>
 </div>
-{% endfor %}
+
+<footer>
+  Built by Britany Walker &nbsp;·&nbsp; IT Support & Cybersecurity Portfolio
+</footer>
 
 </body>
 </html>
