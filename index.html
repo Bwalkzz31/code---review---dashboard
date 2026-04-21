@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Code Review Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .review {
+            background: white;
+            padding: 15px;
+            border-left: 5px solid #007bff;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Code Review Dashboard</h1>
+
+<form method="POST">
+    <textarea name="code" placeholder="Paste code here"></textarea>
+
+    <input type="text" name="issue" placeholder="Describe issue">
+
+    <label>Severity:</label>
+    <select name="severity">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+    </select>
+
+    <input type="text" name="fix" placeholder="Suggested fix">
+
+    <button type="submit">Submit Review</button>
+</form>
+
+<h2>Reviews</h2>
+
+{% for r in reviews %}
+<div class="review">
+    <p><strong>Issue:</strong> {{ r.issue }}</p>
+    <p><strong>Severity:</strong> {{ r.severity }}</p>
+    <p><strong>Fix:</strong> {{ r.fix }}</p>
+</div>
+{% endfor %}
+
+</body>
+</html>
